@@ -1,6 +1,8 @@
 carbon_dic={'meth':1,'eth':2,'prop':3,'but':4,'pen':5,'hex':6,'hep':7,'oct':8,'non':9,'dec':10,'und':11,'dod':12}
 #list that detects 12 kinds of carbon chains of varying length
 prefix_dic=['di','tri','tetra']
+cobject_list=[]
+j=0
 def carbonCheck(mol_name):
     prefix_list=[]
     chains_list=[]
@@ -84,14 +86,26 @@ def carbonCheck(mol_name):
 
     return carbon_count
 
-#class Carbon_Chain:
-#    def __init__(self, carbons):
-#        carbons=
- #def main():
-#     c_count=carbonCheck(raw_input("Type your molecule: "))
-#     c_list
-#     for i in c_count:
-#         c_list.append(Carbon_Chain(i))
+class Carbon_Chain(object):
+    def __init__(self,name):
+        self.name=name
+    def count (self, count):
+        for i in range (count):
+            j=i+1
+            carbon_name= 'C'+str(j)
+            c=Carbon(carbon_name)
+            cobject_list.append(c) 
+
+
+
+
+
+
+class Carbon (object):
+    def  __init__(self,name):
+        self.name=name
+
+
 
 
 print carbonCheck('18-bromo-12,11,10-tributyl-11-chloro-4,8-diethyl-5-hydroxy-15-methoxy')
