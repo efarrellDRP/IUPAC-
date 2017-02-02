@@ -1,91 +1,54 @@
-carbon_dic={'meth':1,'eth':2,'prop':3,'but':4,'pen':5,'hex':6,'hep':7,'oct':8,
-            'non':9,'dec':10,'und':11,'dod':12}
-#list that detects 12 kinds of carbon chains of varying length
-prefix_dic=['di','tri','tetra']
-
-
+import re
+import tkinter
+carbon_dic={re.compile(r"[m]eth"):1,re.compile(r"[^Mm]eth"):2, re.compile("r^eth"):2,re.compile(r"prop"):3,
+            re.compile(r"but"):4,re.compile(r"pen"):5,re.compile(r"hex"):6,
+            re.compile(r"hep"):7,re.compile(r"oct"):8,re.compile(r"non"):9,
+            re.compile(r"dec"):10,re.compile(r"und"):11,re.compile(r"dod"):12}
+prefix_dic={re.compile(r"di"):1,re.compile(r"tri"):2,re.compile(r"tetra"):3}
 def carbonCheck(mol_name):
     prefix_list=[]
     chains_list=[]
     carbon_count=[]
-    #list initializers
-
-    meth_check=mol_name.count('meth')
-    eth_check=mol_name.count('eth')
-    total_check=eth_check-meth_check
-    #neccesary check to determine between methyl and ethyl groups, can't simply use in func due to 'eth' being in 'meth'
-    #Works by counting the number of meth and eth appearances in the initial input. Ethyl will always appear just as many
-    #times as methyl. The function will append both a methyl and ethyl group for just one appearance of methyl.
-    #So if total_check is non-zero that means there's at least one ethyl group. If total_check returns
-    #zero than that means there are no ethyl groups.
-
-    if total_check==0:
-        meth_prefix=''
-        prefix_amount=0
-        for k in prefix_dic:
-            print(k)
-            prefix_amount+=1
-            meth_prefix=k+'meth'
-            print (meth_prefix)
-            if meth_prefix in mol_name:
-                meth_check=meth_check+prefix_amount
-        for i in range(meth_check):
-            chains_list.append('meth')
-
-
-    if total_check>0: #this ensures the proper amount of ethyl groups are appended to the chains_list
-        meth_prefix=''
-        eth_prefix=''
-        prefix_amount=0
-        ethyl_amount=0
-        for k in prefix_dic:
-            prefix_amount+=1
-            meth_prefix=k+'meth'
-            if meth_prefix in mol_name:
-                meth_check=meth_check+prefix_amount
-        for j in prefix_dic:
-            ethyl_amount+=1
-
-            eth_prefix=j+'eth'
-
-            if eth_prefix in mol_name:
-                total_check=total_check+ethyl_amount
-
-        for i in range(total_check):
-            chains_list.append('eth')
-        for i in range(meth_check):
-            chains_list.append('meth')
-    #
-
+    check=0
+    comp_check=0
     for i in carbon_dic:
+        if i==re.compile("r^eth"):
+            if re.match(i,mol_name):
+                carbon_count.append(carbon_dic[i])
+
+        regexes=[]
         mol_check=0 # determines how many of each lengthed chain appear in the molecule
         prefix_check=''
         prefix_count=0
-        if i in mol_name and i!='meth' and i!='eth':
-            mol_check=mol_name.count(i)
+        if re.findall(i,mol_name):
+
+            mol_check=len(re.findall(i,mol_name))
             for k in prefix_dic:
-                print(i)
-                print(k)
-                prefix_count+=1
-                prefix_check=k+i
-                print (prefix_check)
-                if prefix_check in mol_name:
-                    mol_check=mol_check+prefix_count
+                if i==re.compile(r"[^Mm]eth"):
+                    s=i.pattern
+                    s=s[5:]
+                    prefix_check=re.compile(r'{}{}'.format(k.pattern,s))
+                else:
+                    prefix_check=re.compile(r'{}{}'.format(k.pattern,i.pattern))
+
+
+                if re.findall(prefix_check,mol_name):
+                    check+=1
+                    mol_check=mol_check+prefix_dic[k]
+
             for j in range (mol_check):
                 chains_list.append(i) # appends that chain for as many times it appears in the name
-            print(chains_list)
+
 
     for i in chains_list:
         carbon_count.append(carbon_dic[i])
-
-
     carbon_count.sort(reverse=True)
 
-
-
-
-
     return carbon_count
+
+
+
+
 
 class Carbon_Chain(object):
     def __init__(self,name):
@@ -97,7 +60,7 @@ class Carbon_Chain(object):
             j=i+1
             carbon_name= 'C'+str(j)
             c=Carbon(carbon_name)
-            cobject_list.append(c)
+            cobject_list.append(c.name)
         return cobject_list
 
 class Carbon (object):
@@ -105,14 +68,17 @@ class Carbon (object):
         self.name=name
 def main():
     c_count=carbonCheck(raw_input("Type your molecule: "))
+    del carbon_dic[re.compile("r^eth")]
     c_list=[]
     for i in c_count:
+
         for key,value in carbon_dic.iteritems():
+
             if i==value:
-                c_list.append(Carbon_Chain(key).count(i))
+
+                c_list.append(Carbon_Chain(key.pattern).count(i))
     print c_list
+
 main()
 
-
-print carbonCheck('18-bromo-12,11,10-tributyl-11-chloro-4,8-diethyl-5-hydroxy-15-methoxy')
-#print main
+#print carbonCheck('18-bromo-12,11,10-tributyl-11-chloro-4,8-diethyl-5-hydroxy-15-methoxy')
